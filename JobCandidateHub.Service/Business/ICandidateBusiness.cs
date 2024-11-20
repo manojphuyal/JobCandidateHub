@@ -1,7 +1,8 @@
 ﻿using JobCandidateHub.Database.Models;
+using JobCandidateHub.Service.Models;
 
 namespace JobCandidateHub.Service.Business;
 public interface ICandidateBusiness
 {
-    Task<bool> CreateOrUpdate(Candidate candidate);
+    Task<Response> CreateOrUpdate(Candidate candidate);
 }

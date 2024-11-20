@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace JobCandidateHub.Database.Models;
-public class Candidate: BaseEntity
+namespace JobCandidateHub.Service.Models;
+public class CandidateDto
 {
     [Required]
     [EmailAddress]

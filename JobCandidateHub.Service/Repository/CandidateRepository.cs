@@ -1,6 +1,7 @@
 ﻿using JobCandidateHub.Database.Context;
 using JobCandidateHub.Database.Models;
 using JobCandidateHub.Service.Business;
+using JobCandidateHub.Service.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace JobCandidateHub.Service.Repository;
@@ -11,9 +12,8 @@ public class CandidateRepository : ICandidateBusiness
     {
         _context = context;
     }
-    public async Task<bool> CreateOrUpdate(Candidate candidate)
+    public async Task<Response> CreateOrUpdate(Candidate candidate)
     {
-        var isSuccess = true;
         try
         {
             var existingCandidate = await _context.Candidate.FirstOrDefaultAsync(c => c.Email == candidate.Email);
@@ -33,11 +33,19 @@ public class CandidateRepository : ICandidateBusiness
                 await _context.Candidate.AddAsync(candidate);
             }
             await _context.SaveChangesAsync();
+            return Response.SetResponse(
+                message: existingCandidate != null ? "Candidate updated successfully." : "Candidate created successfully.",
+                isSuccess: true,
+                data: candidate
+            );
         }
         catch (Exception ex)
         {
-            isSuccess = false;
+            return Response.SetResponse(
+                message: $"An unexpected error occurred: {ex.Message}",
+                isSuccess: false,
+                data: null
+            );
         }
-        return isSuccess;
     }
 }

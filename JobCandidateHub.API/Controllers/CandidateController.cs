@@ -1,5 +1,7 @@
-﻿using JobCandidateHub.Database.Models;
+﻿using AutoMapper;
+using JobCandidateHub.Database.Models;
 using JobCandidateHub.Service.Business;
+using JobCandidateHub.Service.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JobCandidateHub.API.Controllers;
@@ -8,24 +10,27 @@ namespace JobCandidateHub.API.Controllers;
 public class CandidateController : ControllerBase
 {
     private readonly ICandidateBusiness _candidateBusiness;
+    private readonly IMapper _mapper;
 
-    public CandidateController(ICandidateBusiness candidateBusiness)
+    public CandidateController(ICandidateBusiness candidateBusiness, IMapper mapper)
     {
         _candidateBusiness = candidateBusiness;
+        _mapper = mapper;
     }
 
     [HttpPost]
-    public async Task<IActionResult> Save(Candidate candidate)
+    public async Task<IActionResult> Save([FromBody]CandidateDto candidateDto)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var isSuccess = await _candidateBusiness.CreateOrUpdate(candidate);
-        if (isSuccess)
+        var candidate = _mapper.Map<Candidate>(candidateDto);
+        var response = await _candidateBusiness.CreateOrUpdate(candidate);
+        if (response.IsSuccess)
         {
             return Ok(candidate);
         }
-        return BadRequest();
+        return BadRequest(candidate);
     }
 }
 
